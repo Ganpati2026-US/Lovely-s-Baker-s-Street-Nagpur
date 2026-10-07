@@ -1,0 +1,7 @@
+.server-data/
+node_modules/
+.next/
+.vercel/
+public/uploads/*
+.env*
+!.env.example

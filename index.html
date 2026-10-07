@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8f1">
+  <meta name="description" content="Lovely's Baker Street serves burgers, bites and good times. Made fresh and ready to share.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Lovely's Baker Street — Burgers, bites & good times">
+  <meta property="og:description" content="Meet the Lovely's menu: burgers, loaded nachos and toasted wraps.">
+  <meta property="og:image" content="DSC01024.jpg">
+  <title>Lovely's Baker Street — Burgers, bites & good times</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20261008a">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Lovely's Baker Street home">
+      <img class="brand-logo" src="lovely-logo.png" alt="Lovely's Baker Street logo">
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="#menu">Menu</a><a href="#burger-story">The stack</a><a href="#story">Our story</a>
+    </nav>
+    <a class="header-cta" href="#franchise">Franchise with us <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><i></i> LOVELY'S BAKER STREET · EST. 2015</p>
+        <h1 id="hero-title">BURGERS.<br><em>BITES.</em><br>GOOD TIMES.</h1>
+        <p class="hero-description">Big, satisfying bites made for sharing. Come by for the burger, stay for one more bite.</p>
+        <div class="hero-actions"><a class="button button-red" href="#franchise">Become a partner <span>↓</span></a><a class="text-link" href="#menu">Explore the menu <span>↗</span></a></div>
+        <p class="hero-note">MADE FRESH. ALWAYS LOVELY.</p>
+      </div>
+      <div class="hero-visual" id="burger-stage">
+        <div class="hero-backdrop" aria-hidden="true"></div>
+        <span class="hero-orbit hero-orbit-one" aria-hidden="true"></span>
+        <span class="hero-orbit hero-orbit-two" aria-hidden="true"></span>
+        <div class="hero-photo-wrap"><img class="hero-photo" data-photo="hero" src="DSC01024.jpg" alt="Lovely's signature burger served in its red-and-cream branded tray" fetchpriority="high"></div>
+        <span class="hero-caption">THE LOVELY'S BURGER · MADE TO BE ENJOYED</span>
+      </div>
+    </section>
+
+    <section class="menu-section section-pad" id="menu" aria-labelledby="menu-title">
+      <div class="section-top"><div><p class="eyebrow">FRESH FROM OUR KITCHEN</p><h2 id="menu-title">A FEW <em>FAVOURITES.</em></h2></div><p>Good food, lovely company.<br>Find something for the table.</p></div>
+      <div class="menu-grid">
+        <article class="menu-card menu-featured"><div class="menu-image"><img data-photo="menu-burger" src="DSC01024.jpg" alt="A Lovely's burger with a sesame bun and fresh lettuce" loading="lazy"><span class="menu-index">01</span></div><div class="menu-info"><div><h3>The Lovely's Burger</h3><p>Our signature, stacked and served fresh.</p></div></div></article>
+        <article class="menu-card"><div class="menu-image"><img data-photo="menu-nachos" src="DSC01130.jpg" alt="Loaded nachos with cheese and sauce" loading="lazy"><span class="menu-index">02</span></div><div class="menu-info"><div><h3>Loaded Nachos</h3><p>Crunchy, cheesy, and made for sharing.</p></div></div></article>
+        <article class="menu-card"><div class="menu-image"><img data-photo="menu-wrap" src="DSC01064.jpg" alt="Toasted wrap served with Lovely's signature sauce" loading="lazy"><span class="menu-index">03</span></div><div class="menu-info"><div><h3>Toasted Wrap</h3><p>A warm, satisfying bite with a little crunch.</p></div></div></article>
+      </div>
+      <p class="menu-footnote">A TASTE OF WHAT WE DO. ASK US WHAT'S FRESH TODAY.</p>
+    </section>
+
+    <section class="story-section" id="story" aria-labelledby="story-title">
+      <div class="story-image"><img data-photo="story" src="DSC01175.jpg" alt="A table full of Lovely's burgers, wraps, nachos and sauces" loading="lazy"></div>
+      <div class="story-copy"><p class="eyebrow">GOOD FOOD BRINGS US TOGETHER</p><h2 id="story-title">PULL UP A CHAIR.<br><em>MAKE IT LOVELY.</em></h2><p>From the first burger to the last shared bite, Lovely's is a place to slow down, catch up and enjoy something delicious together.</p><a class="button button-cream" href="#menu">Find your favourite <span>↗</span></a></div>
+    </section>
+    <section class="franchise-section section-pad" id="franchise" aria-labelledby="franchise-title">
+      <div class="franchise-intro"><p class="eyebrow">GROW WITH LOVELY'S</p><h2 id="franchise-title">LET'S MAKE<br><em>IT A LOVELY BUSINESS.</em></h2><p>Interested in bringing Lovely's Baker Street to your city? Share a few details and our franchise team will get in touch.</p></div>
+      <form class="franchise-form" id="franchise-form">
+        <div class="form-grid">
+          <label>Your name<input name="name" autocomplete="name" maxlength="100" required></label>
+          <label>Mobile number<input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="20" required></label>
+          <label>Email address <span>(optional)</span><input name="email" type="email" autocomplete="email" maxlength="254"></label>
+          <label>City you'd like to open in<input name="city" autocomplete="address-level2" maxlength="100" required></label>
+        </div>
+        <label class="message-label">A little about your plans <span>(optional)</span><textarea name="message" rows="3" maxlength="1000"></textarea></label>
+        <label class="consent-label"><input name="consent" type="checkbox" required><span>I agree that Lovely's Baker Street may contact me about franchise opportunities.</span></label>
+        <div class="form-trap" aria-hidden="true"><label>Leave this field empty<input name="website" tabindex="-1" autocomplete="off"></label></div>
+        <button class="button button-red" type="submit">Send my enquiry <span>↗</span></button>
+        <p class="form-note">We’ll use your details only to follow up about franchise opportunities.</p>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+    <section class="burger-story" id="burger-story" aria-labelledby="burger-story-title">
+      <div class="burger-story-heading">
+        <p class="eyebrow">A CLOSER LOOK AT THE LOVELY STACK</p>
+        <h2 id="burger-story-title">BUILT TOGETHER.<br><em>PULLED APART.</em></h2>
+        <p>Scroll to bring the burger together, then take it apart layer by layer. Each chapter has a video slot ready for your kitchen footage.</p>
+      </div>
+      <div class="burger-story-layout">
+        <div class="burger-stack-stage" aria-label="Interactive burger stack that assembles and separates as you scroll">
+          <div class="stack-backdrop" aria-hidden="true"></div>
+          <span class="stack-orbit stack-orbit-one" aria-hidden="true"></span><span class="stack-orbit stack-orbit-two" aria-hidden="true"></span>
+          <img class="stack-fallback" data-photo="hero" src="DSC01024.jpg" alt="Lovely's signature burger" loading="lazy">
+          <canvas id="burger-canvas" role="img" aria-label="Burger layers assemble and separate as you scroll"></canvas>
+          <div class="stack-caption"><span>THE LOVELY'S STACK</span><span>SCROLL TO EXPLORE ↓</span></div>
+        </div>
+        <div class="burger-chapters">
+          <article class="burger-chapter" data-chapter="build">
+            <div class="video-slot" aria-label="Video placeholder for burger assembly"><span class="video-label">VIDEO PLACEHOLDER · THE BUILD</span><span class="play-mark" aria-hidden="true">▶</span></div>
+            <div class="chapter-copy"><span class="chapter-number">01 — STACK IT UP</span><h3>First, bring it all together.</h3><p>Scroll to assemble the bun, greens, tomato, onion and patties into one Lovely's burger.</p></div>
+          </article>
+          <article class="burger-chapter" data-chapter="crown">
+            <div class="video-slot" aria-label="Video placeholder for the toasted bun"><span class="video-label">VIDEO PLACEHOLDER · THE CROWN</span><span class="play-mark" aria-hidden="true">▶</span></div>
+            <div class="chapter-copy"><span class="chapter-number">02 — THE CROWN</span><h3>Golden, toasted, ready.</h3><p>A soft sesame bun gets the first spot in the stack.</p></div>
+          </article>
+          <article class="burger-chapter" data-chapter="fresh">
+            <div class="video-slot" aria-label="Video placeholder for fresh burger toppings"><span class="video-label">VIDEO PLACEHOLDER · THE FRESH LAYERS</span><span class="play-mark" aria-hidden="true">▶</span></div>
+            <div class="chapter-copy"><span class="chapter-number">03 — THE FRESH LAYERS</span><h3>A little crunch in every bite.</h3><p>Fresh lettuce, ripe tomato and onion bring the stack to life.</p></div>
+          </article>
+          <article class="burger-chapter" data-chapter="patty">
+            <div class="video-slot" aria-label="Video placeholder for burger patties"><span class="video-label">VIDEO PLACEHOLDER · THE PATTY</span><span class="play-mark" aria-hidden="true">▶</span></div>
+            <div class="chapter-copy"><span class="chapter-number">04 — THE PATTY</span><h3>That crispy-edge moment.</h3><p>Two cheesy patties bring the rich, savoury middle.</p></div>
+          </article>
+          <article class="burger-chapter" data-chapter="finish">
+            <div class="video-slot" aria-label="Video placeholder for the finished burger"><span class="video-label">VIDEO PLACEHOLDER · THE FINISH</span><span class="play-mark" aria-hidden="true">▶</span></div>
+            <div class="chapter-copy"><span class="chapter-number">05 — PULL IT APART</span><h3>All the good stuff, on show.</h3><p>Keep scrolling to see every layer lift away from the finished Lovely's stack.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+  </main>
+
+  <footer class="site-footer"><a class="brand footer-brand" href="#top" aria-label="Lovely's Baker Street home"><img class="brand-logo" src="lovely-logo.png" alt="Lovely's Baker Street logo"></a><p>BURGERS, BITES & GOOD TIMES.</p><a class="admin-link" href="admin.html">Admin</a><span>© 2026 LOVELY'S BAKER STREET</span></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+  <script src="main.js?v=20261008a" defer></script>
+</body>
+</html>
