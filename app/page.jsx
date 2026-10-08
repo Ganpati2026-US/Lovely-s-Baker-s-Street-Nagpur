@@ -1,4 +1,5 @@
 import SiteEffects from './site-effects';
+import LaunchView from './launch/LaunchView';
 
 export default function HomePage() {
   return <>
@@ -8,7 +9,8 @@ export default function HomePage() {
       <a className="header-cta" href="#franchise">Franchise with us <span aria-hidden="true">↗</span></a>
     </header>
     <main id="top">
-      <section className="hero" aria-labelledby="hero-title">
+      <LaunchView />
+      <section className="hero" id="home" aria-labelledby="hero-title">
         <div className="hero-copy"><p className="eyebrow"><i /> LOVELY'S BAKER STREET · EST. 2015</p><h1 id="hero-title">BURGERS.<br /><em>BITES.</em><br />GOOD TIMES.</h1><p className="hero-description">Big, satisfying bites made for sharing. Come by for the burger, stay for one more bite.</p><div className="hero-actions"><a className="button button-red" href="#franchise">Become a partner <span>↓</span></a><a className="text-link" href="#menu">Explore the menu <span>↗</span></a></div><p className="hero-note">MADE FRESH. ALWAYS LOVELY.</p></div>
         <div className="hero-visual" id="burger-stage"><div className="hero-backdrop" aria-hidden="true" /><span className="hero-orbit hero-orbit-one" aria-hidden="true" /><span className="hero-orbit hero-orbit-two" aria-hidden="true" /><div className="hero-photo-wrap"><img className="hero-photo" data-photo="hero" src="/DSC01024.jpg" alt="Lovely's signature burger served in its red-and-cream branded tray" fetchPriority="high" /></div><span className="hero-caption">THE LOVELY'S BURGER · MADE TO BE ENJOYED</span></div>
       </section>
@@ -45,7 +47,15 @@ export default function HomePage() {
         </div>
       </section>
     </main>
-    <footer className="site-footer"><a className="brand footer-brand" href="#top" aria-label="Lovely's Baker Street home"><img className="brand-logo" src="/lovely-logo.png" alt="Lovely's Baker Street logo" /></a><p>BURGERS, BITES &amp; GOOD TIMES.</p><a className="admin-link" href="/admin">Admin</a><span>© 2026 LOVELY'S BAKER STREET</span></footer>
+    <footer className="site-footer">
+      <div className="footer-intro"><a className="brand footer-brand" href="#top" aria-label="Lovely's Baker Street home"><img className="brand-logo" src="/lovely-logo.png" alt="Lovely's Baker Street logo" /></a><p>BURGERS, BITES &amp; GOOD TIMES.</p></div>
+      <div className="footer-locations" aria-label="Our locations">
+        <div><h2>NAGPUR HQ</h2><address>Shop no 4, Laxmi Niwas, near NIT Garden, Adarsh Colony, Bhamti, aptt, Trimurti Nagar, Nagpur, Maharashtra 440022</address></div>
+        <div><h2>RAIPUR, CG</h2><address>C115, Sector 1, sec 1, Devendra Nagar, Raipur, Chhattisgarh 492009</address></div>
+        <div><h2>BAPATLA, AP</h2><address>Lovely&apos;s, Baker Street, beside Banglore Bakery, opposite Mahila Lok, Maddiboinavaripalem, Bapatla, Andhra Pradesh 522101</address></div>
+      </div>
+      <div className="footer-bottom"><span>© 2026 LOVELY'S BAKER STREET</span><div className="footer-credit"><span>CRAFTED BY</span><a className="footer-logo-link" href="https://appetiserindia.com" target="_blank" rel="noopener noreferrer" aria-label="Appetiser India (opens in a new tab)"><img src="/appetiser-india-logo.jpeg" alt="Appetiser India" loading="lazy" /></a><small>Think it. We will build it.</small></div><a className="admin-link" href="/admin">Admin</a></div>
+    </footer>
     <SiteEffects />
   </>;
 }
