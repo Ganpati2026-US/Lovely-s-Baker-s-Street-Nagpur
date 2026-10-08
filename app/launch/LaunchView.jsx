@@ -39,7 +39,7 @@ export default function LaunchView() {
       </div>
       <div className="launch-visual">
         <img className="launch-logo-backdrop" src="/lovely-logo.png" alt="" aria-hidden="true" />
-        <img className={`launch-fallback${ready ? ' is-hidden' : ''}`} src="/DSC01024.jpg" alt="" aria-hidden="true" />
+        <img className={`launch-fallback${ready ? ' is-hidden' : ''}`} src="/DSC01024.jpg" srcSet="/DSC01024-960.webp 960w, /DSC01024-1600.webp 1600w, /DSC01024.jpg 2200w" sizes="(max-width: 700px) 90vw, 50vw" decoding="async" fetchPriority="high" alt="" aria-hidden="true" />
         {mounted && <div className="launch-canvas" role="group" aria-label="3D burger. Drag to rotate it, or use the arrow keys." tabIndex={0}
           onPointerDown={event => {
             if (event.pointerType === 'mouse' && event.button !== 0) return;

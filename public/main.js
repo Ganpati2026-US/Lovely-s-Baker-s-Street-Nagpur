@@ -4,7 +4,11 @@
     if (!photos) return;
     document.querySelectorAll('[data-photo]').forEach(image => {
       const next = photos[image.dataset.photo];
-      if (next) image.src = next;
+      if (next && next !== image.getAttribute('src')) {
+        image.removeAttribute('srcset');
+        image.removeAttribute('sizes');
+        image.src = next;
+      }
     });
   }).catch(() => {});
 
@@ -79,7 +83,28 @@
 
   const section = document.querySelector('#burger-story');
   const canvas = document.querySelector('#burger-canvas');
-  if (!section || !canvas || !window.THREE) return;
+  if (!section || !canvas) return;
+
+  const loadBurger = () => {
+    const effectsScript = document.createElement('script');
+    effectsScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    effectsScript.onload = () => initBurger();
+    effectsScript.onerror = () => console.error('Could not load Three.js for the burger animation.');
+    document.head.appendChild(effectsScript);
+  };
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      observer.disconnect();
+      loadBurger();
+    }, { rootMargin: '600px 0px' });
+    observer.observe(section);
+  } else {
+    loadBurger();
+  }
+
+  function initBurger() {
+  if (!window.THREE) return;
 
   let renderer;
   try {
@@ -125,11 +150,17 @@
   const stage = canvas.parentElement;
   let compactStage = matchMedia('(max-width: 850px)').matches;
   const loader = new THREE.TextureLoader();
+  const textureCache = new Map();
+  const uniqueFiles = new Set(ingredientData.map(item => item.file));
   const layers = ingredientData.map((item, index) => {
-    const texture = loader.load(item.file, () => {
-      loadedTextures += 1;
-      if (loadedTextures === ingredientData.length && !frame) frame = requestAnimationFrame(render);
-    }, undefined, error => console.warn(`Could not load burger layer ${item.file}.`, error));
+    let texture = textureCache.get(item.file);
+    if (!texture) {
+      texture = loader.load(`/${item.file}`, () => {
+        loadedTextures += 1;
+        if (loadedTextures === uniqueFiles.size && !frame) frame = requestAnimationFrame(render);
+      }, undefined, error => console.warn(`Could not load burger layer ${item.file}.`, error));
+      textureCache.set(item.file, texture);
+    }
     texture.encoding = THREE.sRGBEncoding;
     const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, alphaTest: .025, depthWrite: false, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(new THREE.PlaneGeometry(...item.size), material);
@@ -184,7 +215,7 @@
   window.addEventListener('resize', updateScrollProgress, { passive: true });
   const render = () => {
     frame = 0;
-    if (loadedTextures !== ingredientData.length) return;
+    if (loadedTextures !== uniqueFiles.size) return;
     pointerX += (targetX - pointerX) * .055;
     pointerY += (targetY - pointerY) * .055;
     const targetCameraZ = compactStage ? 6.8 + explosion * 4.7 : 8.2 + explosion * 5;
@@ -213,4 +244,5 @@
   };
 
   updateScrollProgress();
+  }
 })();
