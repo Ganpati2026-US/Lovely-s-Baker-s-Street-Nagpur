@@ -48,7 +48,7 @@ export default function HomePage() {
       </section>
     </main>
     <footer className="site-footer">
-      <div className="footer-intro"><a className="brand footer-brand" href="#top" aria-label="Lovely's Baker Street home"><img className="brand-logo" src="/lovely-logo.png" alt="Lovely's Baker Street logo" /></a><p>BURGERS, BITES &amp; GOOD TIMES.</p></div>
+      <div className="footer-intro"><a className="brand footer-brand" href="#top" aria-label="Lovely's Baker Street home"><img className="brand-logo" src="/lovely-logo.png" alt="Lovely's Baker Street logo" /></a><p>Lovely&apos;s Baker Street | Best Burger In India</p></div>
       <div className="footer-locations" aria-label="Our locations">
         <div><h2>NAGPUR HQ</h2><address>Shop no 4, Laxmi Niwas, near NIT Garden, Adarsh Colony, Bhamti, aptt, Trimurti Nagar, Nagpur, Maharashtra 440022</address></div>
         <div><h2>RAIPUR, CG</h2><address>C115, Sector 1, sec 1, Devendra Nagar, Raipur, Chhattisgarh 492009</address></div>

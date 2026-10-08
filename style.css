@@ -112,7 +112,7 @@ h1, h2, h3, p { margin-top: 0; }
 .admin-link:hover { color: #fff; }
 
 .site-footer { min-height: 100px; padding: 17px clamp(22px, 6vw, 88px); display: flex; align-items: center; justify-content: space-between; gap: 20px; background: var(--ink); color: #fff; }
-.footer-brand .brand-logo { width: 58px; height: 58px; }
+.footer-brand .brand-logo { width: 88px; height: 88px; }
 .site-footer > p, .site-footer > span { margin: 0; color: #d7ceca; font: 700 9px var(--display); letter-spacing: .12em; }
 
 @media (max-width: 850px) {
@@ -161,7 +161,7 @@ h1, h2, h3, p { margin-top: 0; }
   .franchise-form input:not([type="checkbox"]), .franchise-form textarea { padding: 11px; }
   .site-footer .admin-link { grid-column: 2; grid-row: 2; align-self: center; }
   .site-footer { min-height: 0; padding: 20px; display: grid; grid-template-columns: 1fr auto; gap: 14px; }
-  .footer-brand .brand-logo { width: 50px; height: 50px; }
+  .footer-brand .brand-logo { width: 72px; height: 72px; }
   .site-footer > p { grid-column: 1 / -1; grid-row: 2; }
   .site-footer > span { grid-column: 1 / -1; font-size: 8px; }
 }
