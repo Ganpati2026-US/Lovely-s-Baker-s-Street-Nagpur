@@ -54,7 +54,7 @@ export default function HomePage() {
         <div><h2>RAIPUR, CG</h2><address>C115, Sector 1, sec 1, Devendra Nagar, Raipur, Chhattisgarh 492009</address></div>
         <div><h2>BAPATLA, AP</h2><address>Lovely&apos;s, Baker Street, beside Banglore Bakery, opposite Mahila Lok, Maddiboinavaripalem, Bapatla, Andhra Pradesh 522101</address></div>
       </div>
-      <div className="footer-bottom"><span>© 2026 LOVELY'S BAKER STREET</span><div className="footer-credit"><span>CRAFTED BY</span><a className="footer-logo-link" href="https://appetiserindia.com" target="_blank" rel="noopener noreferrer" aria-label="Appetiser India (opens in a new tab)"><img src="/appetiser-india-logo.jpeg" alt="Appetiser India" loading="lazy" /></a><small>Think it. We will build it.</small></div><a className="admin-link" href="/admin">Admin</a></div>
+      <div className="footer-bottom"><span>© 2026 LOVELY'S BAKER STREET</span><div className="footer-credit"><span>CRAFTED BY</span><a className="footer-wordmark" href="https://appetiserindia.com" target="_blank" rel="noopener noreferrer" aria-label="Appetiser India (opens in a new tab)"><span>Appetiser</span><span>INDIA</span></a><small>Think it. We will build it.</small></div><a className="admin-link" href="/admin">Admin</a></div>
     </footer>
     <SiteEffects />
   </>;
