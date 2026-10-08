@@ -5,6 +5,13 @@ import { useEffect } from 'react';
 export default function SiteEffects() {
   useEffect(() => {
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let scrollbarTimer;
+    const showScrollbar = () => {
+      document.documentElement.classList.add('scrollbar-active');
+      window.clearTimeout(scrollbarTimer);
+      scrollbarTimer = window.setTimeout(() => document.documentElement.classList.remove('scrollbar-active'), 900);
+    };
+    window.addEventListener('scroll', showScrollbar, { passive: true });
     let revealObserver;
     let revealTargets = [];
 
@@ -58,6 +65,9 @@ export default function SiteEffects() {
     document.head.appendChild(effectsScript);
     return () => {
       disposed = true;
+      window.removeEventListener('scroll', showScrollbar);
+      window.clearTimeout(scrollbarTimer);
+      document.documentElement.classList.remove('scrollbar-active');
       revealObserver?.disconnect();
       document.documentElement.classList.remove('motion-ready');
       revealTargets.forEach(element => {

@@ -10,7 +10,12 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+html { scroll-behavior: smooth; scroll-padding-top: 90px; scrollbar-width: thin; scrollbar-color: transparent transparent; }
+html.scrollbar-active { scrollbar-color: var(--red) transparent; }
+html::-webkit-scrollbar { width: 8px; }
+html::-webkit-scrollbar-track { background: transparent; }
+html::-webkit-scrollbar-thumb { background: transparent; border-radius: 8px; }
+html.scrollbar-active::-webkit-scrollbar-thumb { background: var(--red); }
 body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); overflow-x: hidden; }
 a { color: inherit; text-decoration: none; }
 img { display: block; width: 100%; height: 100%; object-fit: cover; }
