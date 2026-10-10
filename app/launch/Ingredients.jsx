@@ -56,7 +56,8 @@ export function BurgerFlag(){
  useEffect(()=>()=>flagLogo.dispose(),[flagLogo]);
  return <group position={[0,0,0]}>
    <mesh position={[0,1.365,0]} castShadow><cylinderGeometry args={[.025,.031,1.53,16]}/><meshStandardMaterial color="#b18a54" roughness={.86}/></mesh>
-   <group position={[0,1.58,0]}>
+   {/* Align the paper top (1.84 + .29) with the wooden rod tip (1.365 + .765). */}
+   <group name="flag-paper" position={[0,1.84,0]}>
      <mesh position={[.51,0,0]} castShadow><boxGeometry args={[1.02,.58,.012]}/><meshStandardMaterial color="#fffdf5" roughness={.9} emissive="#fffdf5" emissiveIntensity={.18}/></mesh>
      <mesh position={[.51,0,.009]}><planeGeometry args={[.53,.53]}/><meshBasicMaterial map={flagLogo} transparent depthWrite={false} toneMapped={false}/></mesh>
      <mesh position={[.51,0,-.009]} rotation={[0,Math.PI,0]}><planeGeometry args={[.53,.53]}/><meshBasicMaterial map={flagLogo} transparent depthWrite={false} toneMapped={false}/></mesh>
