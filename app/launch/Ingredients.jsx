@@ -54,16 +54,12 @@ export function BurgerFlag(){
    return texture;
  },[logo]);
  useEffect(()=>()=>flagLogo.dispose(),[flagLogo]);
- const flag=useRef();
- useFrame(({clock})=>{
-   if(flag.current)flag.current.rotation.y=Math.sin(clock.elapsedTime*1.5)*.045;
- });
  return <group position={[0,0,0]}>
-   <mesh position={[0,1.32,0]} castShadow><cylinderGeometry args={[.022,.028,1.48,16]}/><meshStandardMaterial color="#b18a54" roughness={.86}/></mesh>
-   <group ref={flag} position={[0,1.66,0]}>
-     <mesh position={[.51,0,0]} castShadow><planeGeometry args={[1.02,.58]}/><meshStandardMaterial color="#ffffff" side={THREE.DoubleSide} roughness={.85}/></mesh>
-     <mesh position={[.51,0,.006]}><planeGeometry args={[.53,.53]}/><meshBasicMaterial map={flagLogo} transparent depthWrite={false} side={THREE.DoubleSide} toneMapped={false}/></mesh>
-     <mesh position={[.51,0,-.006]} rotation={[0,Math.PI,0]}><planeGeometry args={[.53,.53]}/><meshBasicMaterial map={flagLogo} transparent depthWrite={false} side={THREE.DoubleSide} toneMapped={false}/></mesh>
+   <mesh position={[0,1.25,0]} castShadow><cylinderGeometry args={[.025,.031,1.30,16]}/><meshStandardMaterial color="#b18a54" roughness={.86}/></mesh>
+   <group position={[0,1.58,0]}>
+     <mesh position={[.51,0,0]} castShadow><boxGeometry args={[1.02,.58,.012]}/><meshStandardMaterial color="#fffdf5" roughness={.9} emissive="#fffdf5" emissiveIntensity={.18}/></mesh>
+     <mesh position={[.51,0,.009]}><planeGeometry args={[.53,.53]}/><meshBasicMaterial map={flagLogo} transparent depthWrite={false} toneMapped={false}/></mesh>
+     <mesh position={[.51,0,-.009]} rotation={[0,Math.PI,0]}><planeGeometry args={[.53,.53]}/><meshBasicMaterial map={flagLogo} transparent depthWrite={false} toneMapped={false}/></mesh>
    </group>
  </group>;
 }
@@ -122,6 +118,8 @@ export function Patty() {
  return <mesh geometry={geometry} castShadow receiveShadow><meshPhysicalMaterial {...maps} map={coating} bumpMap={coating} onBeforeCompile={pattySurface} roughness={1} bumpScale={.015} clearcoat={.02} clearcoatRoughness={.7}/></mesh>;
 }
 
+export const CHEESE_SURFACE_HEIGHT = .074;
+
 export function Cheese({ progress }) {
  const ref = useRef();
  const maps = useMemo(() => foodMaps('cheese'), []);
@@ -162,7 +160,7 @@ export function Cheese({ progress }) {
  return <mesh ref={ref} geometry={geometry} castShadow receiveShadow><meshPhysicalMaterial {...maps} bumpScale={.006} roughness={.74} clearcoat={.2} clearcoatRoughness={.4} side={THREE.DoubleSide} emissive="#e6a02b" emissiveIntensity={.12}/></mesh>;
 }
 
-export function Lettuce() {
+export function Lettuce({ supportHeight = .052 }) {
  const maps = useMemo(() => foodMaps('leaf'), []);
  const leaf = useTexture('/textures/lettuce-leaf-v2.webp');
  useMemo(() => { leaf.colorSpace = THREE.SRGBColorSpace; leaf.anisotropy = 8; }, [leaf]);
@@ -178,11 +176,21 @@ export function Lettuce() {
      uvs.push(.5 + Math.cos(a) * t * .5, .5 + Math.sin(a) * t * .5);
      if (ring < radial && j < segments) {const k = ring * (segments + 1) + j; indices.push(k,k+1,k+segments+1,k+1,k+segments+2,k+segments+1);}
    }
-   const g = new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2)); g.setIndex(indices); g.computeVertexNormals(); return g;
- }), []);
- return <group>{leaves.map((g,i) => {
+   const g = new THREE.BufferGeometry(); g.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3)); g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2)); g.setIndex(indices);
    const a = i / 7 * Math.PI * 2, radius = i < 7 ? .88 : .24;
-   return <mesh key={i} geometry={g} position={[Math.cos(a)*radius, .015+(i%3)*.024, Math.sin(a)*radius*.84]} rotation={[.02*Math.sin(a),a,.06*Math.cos(a)]} castShadow receiveShadow>
+   g.applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(.02*Math.sin(a),a,.06*Math.cos(a))));
+   g.translate(Math.cos(a)*radius, .015+(i%3)*.024, Math.sin(a)*radius*.84);
+   // Gently flatten only folds that would penetrate the cheese. Bake this
+   // after leaf placement so the clearance holds for every rotated leaf.
+   const positions = g.attributes.position;
+   for (let vertex = 0; vertex < positions.count; vertex++) {
+     const height = positions.getY(vertex);
+     positions.setY(vertex, supportHeight + .012*Math.log1p(Math.exp((height-supportHeight)/.012)));
+   }
+   g.computeVertexNormals(); return g;
+ }), [supportHeight]);
+ return <group>{leaves.map((g,i) => {
+   return <mesh key={i} geometry={g} castShadow receiveShadow>
      <meshPhysicalMaterial {...maps} map={leaf} bumpMap={leaf} color={i%3 ? '#ffffff' : '#edf6c8'} bumpScale={.012} roughness={.84} side={THREE.DoubleSide} clearcoat={.18} clearcoatRoughness={.4} emissive="#486b0a" emissiveIntensity={.065}/>
    </mesh>;
  })}</group>;

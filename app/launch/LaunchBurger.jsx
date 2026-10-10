@@ -4,17 +4,19 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer } from '@react-three/drei';
 import * as THREE from 'three';
-import { Bun, Patty, Cheese, Lettuce, Tomato, Onions, Sauce, BurgerFlag } from './Ingredients';
+import { Bun, Patty, Cheese, Lettuce, Tomato, Onions, Sauce, BurgerFlag, CHEESE_SURFACE_HEIGHT } from './Ingredients';
 import { Steam } from './Atmosphere';
 
 const TOP_BUN_Y = -.315;
+const CHEESE_Y = -.708;
+const LETTUCE_Y = -.68;
 const DROP_DURATION = .68;
 const LAYER_INTERVAL = .95;
 const layers = [
   { name: 'bottom-bun', Component: Bun, y: -1.24, from: -3.5 },
   { name: 'patty', Component: Patty, y: -.835, from: 3.8 },
-  { name: 'cheese', Component: Cheese, y: -.708, from: 3.8 },
-  { name: 'lettuce', Component: Lettuce, y: -.68, from: 3.8 },
+  { name: 'cheese', Component: Cheese, y: CHEESE_Y, from: 3.8 },
+  { name: 'lettuce', Component: Lettuce, y: LETTUCE_Y, from: 3.8, supportHeight: CHEESE_Y + CHEESE_SURFACE_HEIGHT - LETTUCE_Y + .006 },
   { name: 'tomato', Component: Tomato, y: -.55, from: 4 },
   { name: 'onions', Component: Onions, y: -.455, from: 4 },
   { name: 'sauce', Component: Sauce, y: -.405, from: 3.8 },
@@ -35,7 +37,7 @@ function IngredientLayer({ item, readyProgress, reducedMotion, timeline }) {
     ref.current.rotation.z = .12 * (1 - eased);
   });
   return <group name={`ingredient-${item.name}`} ref={ref} position={[0, reducedMotion ? item.y : item.y + item.from, 0]} visible={reducedMotion}>
-    <item.Component top={item.top} progress={readyProgress} />
+    <item.Component top={item.top} progress={readyProgress} supportHeight={item.supportHeight} />
   </group>;
 }
 
