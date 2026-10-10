@@ -7,87 +7,107 @@ import * as THREE from 'three';
 import { Bun, Patty, Cheese, Lettuce, Tomato, Onions, Sauce, BurgerFlag } from './Ingredients';
 import { Steam } from './Atmosphere';
 
+const TOP_BUN_Y = -.315;
+const DROP_DURATION = .68;
+const LAYER_INTERVAL = .95;
 const layers = [
-  { Component: Bun, y: -1.24, from: -3.5, delay: 0 },
-  { Component: Patty, y: -.79, from: 3.8, delay: .38 },
-  { Component: Cheese, y: -.62, from: 3.8, delay: .76 },
-  { Component: Lettuce, y: -.49, from: 3.8, delay: 1.14 },
-  { Component: Tomato, y: -.29, from: 4, delay: 1.52 },
-  { Component: Onions, y: -.175, from: 4, delay: 1.9 },
-  { Component: Sauce, y: -.14, from: 3.8, delay: 2.28 },
-  { Component: Bun, y: -.035, from: 4.2, delay: 2.66, top: true },
-];
+  { name: 'bottom-bun', Component: Bun, y: -1.24, from: -3.5 },
+  { name: 'patty', Component: Patty, y: -.835, from: 3.8 },
+  { name: 'cheese', Component: Cheese, y: -.708, from: 3.8 },
+  { name: 'lettuce', Component: Lettuce, y: -.68, from: 3.8 },
+  { name: 'tomato', Component: Tomato, y: -.55, from: 4 },
+  { name: 'onions', Component: Onions, y: -.455, from: 4 },
+  { name: 'sauce', Component: Sauce, y: -.405, from: 3.8 },
+  { name: 'top-bun', Component: Bun, y: TOP_BUN_Y, from: 4.2, top: true },
+].map((item, index) => ({ ...item, delay: .15 + index * LAYER_INTERVAL }));
+const TOP_LANDS_AT = layers.at(-1).delay + DROP_DURATION;
+const FLAG_DELAY = TOP_LANDS_AT + .2;
 
-function IngredientLayer({ item, readyProgress, reducedMotion }) {
+function IngredientLayer({ item, readyProgress, reducedMotion, timeline }) {
   const ref = useRef();
-  useFrame(({ clock }, delta) => {
+  useFrame(() => {
     if (reducedMotion) return;
-    const elapsed = clock.elapsedTime;
-    const entered = elapsed > item.delay + .12;
-    const target = item.y + (entered ? 0 : item.from);
-    ref.current.visible = elapsed > item.delay;
-    ref.current.position.y = THREE.MathUtils.damp(ref.current.position.y, target, 5.5, delta);
-    ref.current.rotation.z = THREE.MathUtils.damp(ref.current.rotation.z, entered ? 0 : .18, 5, delta);
+    const elapsed = timeline.current.elapsed;
+    const progress = THREE.MathUtils.clamp((elapsed - item.delay) / DROP_DURATION, 0, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    ref.current.visible = timeline.current.ready && elapsed >= item.delay;
+    ref.current.position.y = item.y + (1 - eased) * item.from;
+    ref.current.rotation.z = .12 * (1 - eased);
   });
-  return <group ref={ref} position={[0, reducedMotion ? item.y : item.y + item.from, 0]} visible={reducedMotion}>
+  return <group name={`ingredient-${item.name}`} ref={ref} position={[0, reducedMotion ? item.y : item.y + item.from, 0]} visible={reducedMotion}>
     <item.Component top={item.top} progress={readyProgress} />
   </group>;
 }
 
-function FlagReveal({ reducedMotion }) {
+function FlagReveal({ reducedMotion, timeline }) {
   const ref = useRef();
-  useFrame(({ clock }) => {
+  useFrame(() => {
     if (reducedMotion) return;
-    const progress = THREE.MathUtils.clamp((clock.elapsedTime - 3.65) / 1.05, 0, 1);
+    const elapsed = timeline.current.elapsed;
+    const progress = THREE.MathUtils.clamp((elapsed - FLAG_DELAY) / .75, 0, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
-    ref.current.visible = clock.elapsedTime >= 3.65;
-    ref.current.position.y = -.035 + (1 - eased) * 2.3;
+    ref.current.visible = timeline.current.ready && elapsed >= FLAG_DELAY;
+    ref.current.position.y = TOP_BUN_Y + (1 - eased) * 2.3;
   });
-  return <group ref={ref} position={[0, reducedMotion ? -.035 : 2.265, 0]} visible={reducedMotion}><BurgerFlag /></group>;
+  return <group name="burger-flag" ref={ref} position={[0, reducedMotion ? TOP_BUN_Y : TOP_BUN_Y + 2.3, 0]} visible={reducedMotion}><BurgerFlag /></group>;
 }
 
 function Burger({ onReady, reducedMotion, rotation, rotationVersion }) {
   const ref = useRef();
-  const { camera, size, invalidate } = useThree();
+  const { camera, size, invalidate, gl, scene } = useThree();
+  const timeline = useRef({ elapsed: 0, ready: false });
   useEffect(() => { invalidate(); }, [invalidate, rotationVersion]);
   useEffect(() => {
     // Fit the complete silhouette on narrow screens while filling wide stages.
     const aspect = size.width / Math.max(1, size.height);
-    camera.position.set(0, -.12, Math.max(5.35, 1.9 / (Math.tan(Math.PI / 9) * aspect) + .9));
+    camera.position.set(0, .65, Math.max(5.65, 1.9 / (Math.tan(Math.PI / 9) * aspect) + .9));
+    camera.lookAt(0, .02, 0);
     camera.updateProjectionMatrix();
   }, [camera, size.width, size.height]);
   const readyProgress = useMemo(() => ({ current: 1 }), []);
   const smokeProgress = useMemo(() => ({ current: reducedMotion ? 1 : 0 }), [reducedMotion]);
   useEffect(() => {
-    onReady();
-  }, [onReady, reducedMotion]);
-  useFrame(({ clock }, delta) => {
+    let cancelled = false;
+    timeline.current = { elapsed: 0, ready: false };
+    // Warm every ingredient's shader before starting the visible sequence.
+    gl.compileAsync(scene, camera).then(() => {
+      if (cancelled) return;
+      timeline.current.ready = true;
+      onReady();
+      invalidate();
+    }).catch(error => console.error('Could not prepare the burger scene.', error));
+    return () => { cancelled = true; };
+  }, [gl, scene, camera, onReady, invalidate, reducedMotion]);
+  useFrame((_, delta) => {
     if (!ref.current) return;
+    // Loading, tab switches, and a slow frame must not skip entire ingredients.
+    if (timeline.current.ready && !reducedMotion) timeline.current.elapsed += Math.min(delta, .1);
+    const elapsed = timeline.current.elapsed;
     ref.current.rotation.y = reducedMotion ? rotation.current.yaw : THREE.MathUtils.damp(ref.current.rotation.y, rotation.current.yaw, 10, delta);
     ref.current.rotation.x = reducedMotion ? rotation.current.pitch : THREE.MathUtils.damp(ref.current.rotation.x, rotation.current.pitch, 10, delta);
     if (!reducedMotion) {
-      smokeProgress.current = THREE.MathUtils.damp(smokeProgress.current, clock.elapsedTime > 1.15 ? 1 : 0, 2.5, delta);
+      smokeProgress.current = THREE.MathUtils.damp(smokeProgress.current, elapsed > layers[1].delay + DROP_DURATION ? 1 : 0, 2.5, delta);
     }
-    const press = reducedMotion ? 0 : Math.sin(Math.PI * THREE.MathUtils.clamp((clock.elapsedTime - 3.45) / .55, 0, 1)) * .016;
-    ref.current.scale.y = 1 - press;
+    const press = reducedMotion ? 0 : Math.sin(Math.PI * THREE.MathUtils.clamp((elapsed - TOP_LANDS_AT) / .45, 0, 1)) * .016;
+    ref.current.scale.y = .9 * (1 - press);
   });
   return <>
-    <ambientLight intensity={.45} />
+    <ambientLight intensity={.32} />
     <Environment resolution={128} frames={1}>
-      <Lightformer form="rect" intensity={2.2} color="#fff1df" scale={[5, 4, 1]} position={[-4, 5, 4]} target={[0, 0, 0]} />
-      <Lightformer form="rect" intensity={1.2} color="#ffffff" scale={[3, 4, 1]} position={[4, 2, 3]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={3} color="#fff5e9" scale={[4, 5, 1]} position={[-4, 5, 4]} target={[0, 0, 0]} />
+      <Lightformer form="rect" intensity={1} color="#ffffff" scale={[2, 4, 1]} position={[4, 2, 3]} target={[0, 0, 0]} />
       <Lightformer form="rect" intensity={2} color="#ffe3bd" scale={[3, 3, 1]} position={[1, 4, -4]} target={[0, 0, 0]} />
     </Environment>
-    <spotLight position={[-3, 6, 5]} intensity={65} angle={.65} penumbra={1} color="#fff0dc" castShadow shadow-mapSize={[1024, 1024]} shadow-bias={-.0002} />
+    <spotLight position={[-3, 6, 5]} intensity={70} angle={.65} penumbra={1} color="#fff5e9" castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-.00015} shadow-normalBias={.015} />
     <spotLight position={[4, 3, -3]} intensity={55} angle={.8} penumbra={1} color="#ffe2ba" />
     <pointLight position={[1, 1, 5]} intensity={5} color="#ffffff" />
-    <group ref={ref} position={[0, 0, 0]} rotation={[0, -.18, 0]}><Steam progress={smokeProgress} />{layers.map((item, index) => <IngredientLayer key={index} item={item} readyProgress={readyProgress} reducedMotion={reducedMotion} />)}<FlagReveal reducedMotion={reducedMotion} /></group>
+    <group ref={ref} position={[0, -.144, 0]} scale={[1, .9, 1]} rotation={[0, -.18, 0]}><Steam progress={smokeProgress} />{layers.map((item, index) => <IngredientLayer key={index} item={item} readyProgress={readyProgress} reducedMotion={reducedMotion} timeline={timeline} />)}<FlagReveal reducedMotion={reducedMotion} timeline={timeline} /></group>
     <ContactShadows position={[0, -1.46, 0]} opacity={.5} scale={7} blur={2.2} far={3} resolution={256} color="#382c24" />
   </>;
 }
 
 export default function LaunchBurger({ active, onReady, reducedMotion, rotation, rotationVersion }) {
-  return <Canvas frameloop={active && !reducedMotion ? 'always' : 'demand'} dpr={[1, 1.5]} shadows camera={{ position: [0, -.15, 6.3], fov: 40 }} gl={{ alpha: true, antialias: true, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1 }}>
+  return <Canvas frameloop={active && !reducedMotion ? 'always' : 'demand'} dpr={[1, 1.75]} shadows camera={{ position: [0, .65, 6.3], fov: 40 }} gl={{ alpha: true, antialias: true, powerPreference: 'high-performance', toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }}>
     <Burger onReady={onReady} reducedMotion={reducedMotion} rotation={rotation} rotationVersion={rotationVersion} />
   </Canvas>;
 }
