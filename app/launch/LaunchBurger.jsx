@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, Environment, Lightformer } from '@react-three/drei';
 import * as THREE from 'three';
-import { Bun, Patty, Cheese, Lettuce, Tomato, Onions, Sauce, BurgerFlag, CHEESE_SURFACE_HEIGHT } from './Ingredients';
+import { Bun, Patty, Cheese, Lettuce, Tomato, Onions, Sauce, BurgerFlag, FlagGlove, CHEESE_SURFACE_HEIGHT } from './Ingredients';
 import { Steam } from './Atmosphere';
 
 const TOP_BUN_Y = -.315;
@@ -12,6 +12,7 @@ const CHEESE_Y = -.708;
 const LETTUCE_Y = -.68;
 const DROP_DURATION = .68;
 const LAYER_INTERVAL = .95;
+const SAUCE_DURATION = 2.8;
 const layers = [
   { name: 'bottom-bun', Component: Bun, y: -1.24, from: -3.5 },
   { name: 'patty', Component: Patty, y: -.835, from: 3.8 },
@@ -19,39 +20,56 @@ const layers = [
   { name: 'lettuce', Component: Lettuce, y: LETTUCE_Y, from: 3.8, supportHeight: CHEESE_Y + CHEESE_SURFACE_HEIGHT - LETTUCE_Y + .006 },
   { name: 'tomato', Component: Tomato, y: -.55, from: 4 },
   { name: 'onions', Component: Onions, y: -.455, from: 4 },
-  { name: 'sauce', Component: Sauce, y: -.405, from: 3.8 },
+  { name: 'sauce', Component: Sauce, y: -.405, from: 0, application: 'drizzle', duration: SAUCE_DURATION },
   { name: 'top-bun', Component: Bun, y: TOP_BUN_Y, from: 4.2, top: true },
-].map((item, index) => ({ ...item, delay: .15 + index * LAYER_INTERVAL }));
+].map((item, index, items) => ({
+  ...item,
+  duration: item.duration ?? DROP_DURATION,
+  delay: .15 + items.slice(0, index).reduce((time, previous) => time + (previous.duration ?? DROP_DURATION) + LAYER_INTERVAL - DROP_DURATION, 0),
+}));
 const TOP_LANDS_AT = layers.at(-1).delay + DROP_DURATION;
 const FLAG_DELAY = TOP_LANDS_AT + .2;
 
 function IngredientLayer({ item, readyProgress, reducedMotion, timeline }) {
   const ref = useRef();
+  const applicationProgress = useMemo(() => ({ current: reducedMotion ? 1 : 0 }), [reducedMotion]);
+  const compressionProgress = useMemo(() => ({ current: reducedMotion ? 1 : 0 }), [reducedMotion]);
   useFrame(() => {
     if (reducedMotion) return;
     const elapsed = timeline.current.elapsed;
-    const progress = THREE.MathUtils.clamp((elapsed - item.delay) / DROP_DURATION, 0, 1);
+    const progress = THREE.MathUtils.clamp((elapsed - item.delay) / item.duration, 0, 1);
+    applicationProgress.current = progress;
+    compressionProgress.current = THREE.MathUtils.smoothstep(elapsed, TOP_LANDS_AT - .12, TOP_LANDS_AT + .25);
     const eased = 1 - Math.pow(1 - progress, 3);
     ref.current.visible = timeline.current.ready && elapsed >= item.delay;
     ref.current.position.y = item.y + (1 - eased) * item.from;
-    ref.current.rotation.z = .12 * (1 - eased);
+    ref.current.rotation.z = item.application === 'drizzle' ? 0 : .12 * (1 - eased);
   });
   return <group name={`ingredient-${item.name}`} ref={ref} position={[0, reducedMotion ? item.y : item.y + item.from, 0]} visible={reducedMotion}>
-    <item.Component top={item.top} progress={readyProgress} supportHeight={item.supportHeight} />
+    <item.Component top={item.top} progress={readyProgress} supportHeight={item.supportHeight} applicationProgress={applicationProgress} compressionProgress={compressionProgress} reducedMotion={reducedMotion} />
   </group>;
 }
 
 function FlagReveal({ reducedMotion, timeline }) {
-  const ref = useRef();
+  const flag = useRef(), hand = useRef();
+  const release = useMemo(() => ({ current: 0 }), []);
   useFrame(() => {
     if (reducedMotion) return;
-    const elapsed = timeline.current.elapsed;
-    const progress = THREE.MathUtils.clamp((elapsed - FLAG_DELAY) / .75, 0, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    ref.current.visible = timeline.current.ready && elapsed >= FLAG_DELAY;
-    ref.current.position.y = TOP_BUN_Y + (1 - eased) * 2.3;
+    const elapsed = timeline.current.elapsed - FLAG_DELAY;
+    const placement = THREE.MathUtils.smootherstep(elapsed, 0, 1.25);
+    const lift = (1 - placement) * 2.3;
+    const retreat = THREE.MathUtils.smootherstep(elapsed, 1.65, 2.55);
+    release.current = THREE.MathUtils.smoothstep(elapsed, 1.30, 1.65);
+    flag.current.visible = timeline.current.ready && elapsed >= 0;
+    flag.current.position.y = TOP_BUN_Y + lift;
+    hand.current.visible = timeline.current.ready && elapsed >= 0 && elapsed < 2.55;
+    hand.current.position.set(retreat * 1.8, TOP_BUN_Y + lift + retreat * 2.8, retreat * .25);
+    hand.current.rotation.z = -retreat * .15;
   });
-  return <group name="burger-flag" ref={ref} position={[0, reducedMotion ? TOP_BUN_Y : TOP_BUN_Y + 2.3, 0]} visible={reducedMotion}><BurgerFlag /></group>;
+  return <>
+    <group name="burger-flag" ref={flag} position={[0, reducedMotion ? TOP_BUN_Y : TOP_BUN_Y + 2.3, 0]} visible={reducedMotion}><BurgerFlag /></group>
+    <group name="flag-glove" ref={hand} visible={false}><FlagGlove release={release} /></group>
+  </>;
 }
 
 function Burger({ onReady, reducedMotion, rotation, rotationVersion }) {

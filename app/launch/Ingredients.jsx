@@ -55,13 +55,34 @@ export function BurgerFlag(){
  },[logo]);
  useEffect(()=>()=>flagLogo.dispose(),[flagLogo]);
  return <group position={[0,0,0]}>
-   <mesh position={[0,1.25,0]} castShadow><cylinderGeometry args={[.025,.031,1.30,16]}/><meshStandardMaterial color="#b18a54" roughness={.86}/></mesh>
+   <mesh position={[0,1.365,0]} castShadow><cylinderGeometry args={[.025,.031,1.53,16]}/><meshStandardMaterial color="#b18a54" roughness={.86}/></mesh>
    <group position={[0,1.58,0]}>
      <mesh position={[.51,0,0]} castShadow><boxGeometry args={[1.02,.58,.012]}/><meshStandardMaterial color="#fffdf5" roughness={.9} emissive="#fffdf5" emissiveIntensity={.18}/></mesh>
      <mesh position={[.51,0,.009]}><planeGeometry args={[.53,.53]}/><meshBasicMaterial map={flagLogo} transparent depthWrite={false} toneMapped={false}/></mesh>
      <mesh position={[.51,0,-.009]} rotation={[0,Math.PI,0]}><planeGeometry args={[.53,.53]}/><meshBasicMaterial map={flagLogo} transparent depthWrite={false} toneMapped={false}/></mesh>
    </group>
  </group>;
+}
+// A photographic glove cutout keeps the reference pose and natural nitrile folds.
+// The lower finger region opens before the hand withdraws from the pick.
+export function FlagGlove({ release }) {
+ const texture = useTexture('/textures/chef-glove-pinch.webp');
+ useMemo(() => { texture.colorSpace = THREE.SRGBColorSpace; }, [texture]);
+ const geometry = useMemo(() => new THREE.PlaneGeometry(2, 2, 48, 48), []);
+ const rest = useMemo(() => geometry.attributes.position.array.slice(), [geometry]);
+ useFrame(() => {
+   const vertices = geometry.attributes.position;
+   for (let i = 0; i < vertices.count; i++) {
+     const x = rest[i * 3], y = rest[i * 3 + 1];
+     const finger = 1 - THREE.MathUtils.smoothstep(y, -.78, -.30);
+     const side = Math.tanh((x + .312) * 35);
+     vertices.setX(i, x + side * finger * release.current * .10);
+   }
+   vertices.needsUpdate = true;
+ });
+ return <mesh position={[.312,2.76,.085]} geometry={geometry}>
+   <meshBasicMaterial map={texture} transparent alphaTest={.015} depthWrite={false} side={THREE.DoubleSide} toneMapped={false}/>
+ </mesh>;
 }
 function LogoStamp(){
  const logo=useTexture('/lovely-logo.png');
@@ -236,7 +257,52 @@ export function Onions() {
  return <group>{[0,1,2].map(i => <group key={i} position={[(i-1)*.44,.005+i*.01,.27-(i%2)*.45]} rotation={[.05*(i-1),i*.8,.045*(i-1)]}><OnionRing radius={.52+i*.05} width={.075+i*.006}/></group>)}</group>;
 }
 
-export function Sauce() {
+// An inward spiral follows the motion of a chef using a squeeze bottle.
+class SauceSpiral extends THREE.Curve {
+ getPoint(t, target = new THREE.Vector3()) {
+   const angle = -Math.PI / 2 + t * Math.PI * 2 * 2.7;
+   const radius = 1.20 * (1 - t) + .06;
+   return target.set(Math.cos(angle)*radius, .035, Math.sin(angle)*radius*.84);
+ }
+}
+
+export function Sauce({ applicationProgress, compressionProgress, reducedMotion = false }) {
+ const spiralRef = useRef(), bottleRef = useRef(), streamRef = useRef(), tipRef = useRef(), spreadRef = useRef();
+ const path = useMemo(() => new SauceSpiral(), []);
+ const head = useMemo(() => new THREE.Vector3(), []);
+ const segments = 240, sides = 10;
+ const spiral = useMemo(() => {
+   const geometry = new THREE.TubeGeometry(path, segments, .043, sides, false);
+   const positions = geometry.attributes.position;
+   for (let i = 0; i < positions.count; i++) positions.setY(i, .035 + (positions.getY(i)-.035)*.62);
+   geometry.computeVertexNormals();
+   geometry.setDrawRange(0, reducedMotion ? Infinity : 0);
+   return geometry;
+ }, [path, reducedMotion]);
+ useFrame(() => {
+   const phase = reducedMotion ? 1 : (applicationProgress?.current ?? 1);
+   const compressed = reducedMotion ? 1 : (compressionProgress?.current ?? 1);
+   const poured = THREE.MathUtils.clamp((phase-.16)/.70, 0, 1);
+   const completedSegments = Math.floor(poured*segments);
+   spiral.setDrawRange(0, completedSegments*sides*6);
+   // Match the rounded end exactly to the last revealed section of the tube.
+   path.getPoint(completedSegments/segments, head);
+   spiralRef.current.visible = poured > 0 && compressed < .995;
+   spiralRef.current.scale.y = 1 - compressed*.6;
+   tipRef.current.position.copy(head);
+   const lift = (1-THREE.MathUtils.smoothstep(phase,0,.14))*.9 + THREE.MathUtils.smoothstep(phase,.86,1)*.9;
+   bottleRef.current.visible = phase > 0 && phase < 1;
+   bottleRef.current.position.set(head.x, 1.07+lift, head.z);
+   bottleRef.current.rotation.set(Math.cos(poured*Math.PI*5.4)*.045,0,Math.sin(poured*Math.PI*5.4)*.07);
+   streamRef.current.visible = phase >= .16 && phase < .86;
+   const streamHeight = 1.07 + lift - head.y;
+   streamRef.current.position.set(head.x, head.y+streamHeight/2, head.z);
+   streamRef.current.scale.set(.026,streamHeight,.026);
+   // The spiral spreads only when the bun presses onto it.
+   spreadRef.current.visible = compressed > .001;
+   const spreadScale = .3 + compressed*.7;
+   spreadRef.current.scale.set(spreadScale,1,spreadScale);
+ });
  const spread = useMemo(() => {
    const g = lathe([[0,-.014],[1.04,-.02],[1.34,-.02],[1.39,0],[1.34,.022],[.8,.022],[0,.02]],.006);
    const p=g.attributes.position;
@@ -247,5 +313,17 @@ export function Sauce() {
    }
    g.computeVertexNormals();return g;
  },[]);
- return <mesh geometry={spread} castShadow receiveShadow><meshPhysicalMaterial color="#e7b47b" roughness={.37} clearcoat={.2} clearcoatRoughness={.3}/></mesh>;
+ return <group>
+   <group ref={spiralRef} name="sauce-spiral" visible={!reducedMotion}>
+     <mesh geometry={spiral} castShadow receiveShadow><meshPhysicalMaterial color="#edbd83" roughness={.36} clearcoat={.22} clearcoatRoughness={.3}/></mesh>
+     <mesh ref={tipRef} scale={[.043,.027,.043]} castShadow><sphereGeometry args={[1,12,8]}/><meshPhysicalMaterial color="#edbd83" roughness={.36} clearcoat={.22}/></mesh>
+   </group>
+   <mesh ref={streamRef} name="sauce-stream" visible={false} castShadow><cylinderGeometry args={[1,1,1,12]}/><meshPhysicalMaterial color="#edbd83" roughness={.34} clearcoat={.25}/></mesh>
+   <group ref={bottleRef} name="sauce-bottle" visible={false}>
+     <mesh position={[0,.10,0]} castShadow><cylinderGeometry args={[.074,.017,.22,20]}/><meshPhysicalMaterial color="#fff5de" roughness={.46}/></mesh>
+     <mesh position={[0,.235,0]} castShadow><cylinderGeometry args={[.105,.105,.07,24]}/><meshPhysicalMaterial color="#fff5de" roughness={.5}/></mesh>
+     <mesh position={[0,.52,0]} castShadow><capsuleGeometry args={[.15,.35,5,20]}/><meshPhysicalMaterial color="#ecc88c" roughness={.48} clearcoat={.15} clearcoatRoughness={.4}/></mesh>
+   </group>
+   <mesh ref={spreadRef} name="sauce-spread" geometry={spread} visible={reducedMotion} castShadow receiveShadow><meshPhysicalMaterial color="#e7b47b" roughness={.37} clearcoat={.2} clearcoatRoughness={.3}/></mesh>
+ </group>;
 }
