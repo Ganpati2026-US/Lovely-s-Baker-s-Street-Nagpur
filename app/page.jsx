@@ -1,17 +1,14 @@
+import SiteNav from './site-nav';
 import SiteEffects from './site-effects';
 import LaunchView from './launch/LaunchView';
 
 export default function HomePage() {
   return <>
-    <header className="site-header">
-      <a className="brand" href="#top" aria-label="Lovely's Baker Street home"><img className="brand-logo" src="/lovely-logo.png" alt="Lovely's Baker Street logo" /></a>
-      <nav className="nav-links" aria-label="Main navigation"><a href="#menu">Menu</a><a href="#burger-story">The stack</a><a href="#story">Our story</a></nav>
-      <a className="header-cta" href="#franchise">Franchise with us <span aria-hidden="true">↗</span></a>
-    </header>
+    <SiteNav />
     <main id="top">
       <LaunchView />
       <section className="hero" id="home" aria-labelledby="hero-title">
-        <div className="hero-copy"><p className="eyebrow"><i /> LOVELY'S BAKER STREET · EST. 2015</p><h1 id="hero-title">BURGERS.<br /><em>BITES.</em><br />GOOD TIMES.</h1><p className="hero-description">Big, satisfying bites made for sharing. Come by for the burger, stay for one more bite.</p><div className="hero-actions"><a className="button button-red" href="#franchise">Become a partner <span>↓</span></a><a className="text-link" href="#menu">Explore the menu <span>↗</span></a></div><p className="hero-note">MADE FRESH. ALWAYS LOVELY.</p></div>
+        <div className="hero-copy"><p className="eyebrow"><i /> LOVELY'S BAKER STREET · EST. 2015</p><h1 id="hero-title">BURGERS.<br /><em>BITES.</em><br />GOOD TIMES.</h1><p className="hero-description">Big, satisfying bites made for sharing. Come by for the burger, stay for one more bite.</p><div className="hero-actions"><a className="button button-red" href="#franchise">Become a partner <span>↓</span></a><a className="text-link" href="/food-gallery">Explore the menu <span>↗</span></a></div><p className="hero-note">MADE FRESH. ALWAYS LOVELY.</p></div>
         <div className="hero-visual" id="burger-stage"><div className="hero-backdrop" aria-hidden="true" /><span className="hero-orbit hero-orbit-one" aria-hidden="true" /><span className="hero-orbit hero-orbit-two" aria-hidden="true" /><div className="hero-photo-wrap"><img className="hero-photo" data-photo="hero" src="/DSC01024.jpg" srcSet="/DSC01024-960.webp 960w, /DSC01024-1600.webp 1600w, /DSC01024.jpg 2200w" sizes="(max-width: 700px) 100vw, 50vw" decoding="async" alt="Lovely's signature burger served in its red-and-cream branded tray" loading="lazy" /></div><span className="hero-caption">THE LOVELY'S BURGER · MADE TO BE ENJOYED</span></div>
       </section>
 
@@ -23,8 +20,6 @@ export default function HomePage() {
           <article className="menu-card"><div className="menu-image"><img data-photo="menu-wrap" src="/DSC01064.jpg" srcSet="/DSC01064-960.webp 960w, /DSC01064-1600.webp 1600w, /DSC01064.jpg 2200w" sizes="(max-width: 700px) 100vw, 33vw" decoding="async" alt="Toasted wrap served with Lovely's signature sauce" loading="lazy" /><span className="menu-index">03</span></div><div className="menu-info"><div><h3>Toasted Wrap</h3><p>A warm, satisfying bite with a little crunch.</p></div></div></article>
         </div><p className="menu-footnote">A TASTE OF WHAT WE DO. ASK US WHAT'S FRESH TODAY.</p>
       </section>
-
-      <section className="story-section" id="story" aria-labelledby="story-title"><div className="story-image"><img data-photo="story" src="/DSC01175.jpg" srcSet="/DSC01175-960.webp 960w, /DSC01175-1600.webp 1600w, /DSC01175.jpg 2200w" sizes="(max-width: 700px) 100vw, 50vw" decoding="async" alt="A table full of Lovely's burgers, wraps, nachos and sauces" loading="lazy" /></div><div className="story-copy"><p className="eyebrow">GOOD FOOD BRINGS US TOGETHER</p><h2 id="story-title">PULL UP A CHAIR.<br /><em>MAKE IT LOVELY.</em></h2><p>From the first burger to the last shared bite, Lovely's is a place to slow down, catch up and enjoy something delicious together.</p><a className="button button-cream" href="#menu">Find your favourite <span>↗</span></a></div></section>
 
       <section className="franchise-section section-pad" id="franchise" aria-labelledby="franchise-title">
         <div className="franchise-intro"><p className="eyebrow">GROW WITH LOVELY'S</p><h2 id="franchise-title">LET'S MAKE<br /><em>IT A LOVELY BUSINESS.</em></h2><p>Interested in bringing Lovely's Baker Street to your city? Share a few details and our franchise team will get in touch.</p></div>
@@ -47,15 +42,6 @@ export default function HomePage() {
         </div>
       </section>
     </main>
-    <footer className="site-footer">
-      <div className="footer-intro"><a className="brand footer-brand" href="#top" aria-label="Lovely's Baker Street home"><img className="brand-logo" src="/lovely-logo.png" alt="Lovely's Baker Street logo" /></a><p>Lovely&apos;s Baker Street | Best Burger In India</p></div>
-      <div className="footer-locations" aria-label="Our locations">
-        <div><h2>NAGPUR HQ</h2><address>Shop no 4, Laxmi Niwas, near NIT Garden, Adarsh Colony, Bhamti, aptt, Trimurti Nagar, Nagpur, Maharashtra 440022</address></div>
-        <div><h2>RAIPUR, CG</h2><address>C115, Sector 1, sec 1, Devendra Nagar, Raipur, Chhattisgarh 492009</address></div>
-        <div><h2>BAPATLA, AP</h2><address>Lovely&apos;s, Baker Street, beside Banglore Bakery, opposite Mahila Lok, Maddiboinavaripalem, Bapatla, Andhra Pradesh 522101</address></div>
-      </div>
-      <div className="footer-bottom"><span>© 2026 LOVELY'S BAKER STREET</span><div className="footer-credit"><span>CRAFTED BY</span><a className="footer-wordmark" href="https://appetiserindia.com" target="_blank" rel="noopener noreferrer" aria-label="Appetiser India (opens in a new tab)"><span>Appetiser</span><span>INDIA</span></a><small>Think it. We will build it.</small></div><a className="admin-link" href="/admin">Admin</a></div>
-    </footer>
     <SiteEffects />
   </>;
 }

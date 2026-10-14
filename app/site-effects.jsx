@@ -14,6 +14,7 @@ export default function SiteEffects() {
     window.addEventListener('scroll', showScrollbar, { passive: true });
     let revealObserver;
     let revealTargets = [];
+    let storyFrame;
 
     if (!motionPreference.matches && 'IntersectionObserver' in window) {
       const groups = [
@@ -22,8 +23,6 @@ export default function SiteEffects() {
         ['.section-top > *', 'rise', 100],
         ['.menu-card', 'serve', 130],
         ['.menu-footnote', 'rise', 0],
-        ['.story-image', 'plate', 0],
-        ['.story-copy > *', 'rise', 90],
         ['.franchise-intro > *', 'rise', 90],
         ['.franchise-form .form-grid label, .franchise-form .message-label, .franchise-form .consent-label, .franchise-form > .button, .franchise-form .form-note', 'rise', 55],
         ['.burger-story-heading > *', 'rise', 90],
@@ -52,6 +51,47 @@ export default function SiteEffects() {
       document.documentElement.classList.add('motion-ready');
     }
 
+    const storySection = document.querySelector('.story-section');
+    const travelingBurger = document.querySelector('.story-burger');
+    const storyStops = [...document.querySelectorAll('[data-story-stop]')];
+    const legs = [...document.querySelectorAll('[data-route-leg]')];
+    const lengths = legs.map(leg => leg.getTotalLength());
+    let target = 0, current = 0, previousTime = 0;
+    const updateStoryJourney = (time) => {
+      storyFrame = 0;
+      if (!travelingBurger || legs.length !== 3) return;
+      const dt = Math.min(time - (previousTime || time - 16), 64);
+      previousTime = time;
+      current += (target - current) * (1 - Math.exp(-dt / 65));
+      if (Math.abs(target - current) < .0001) current = target;
+      // Even chapters hold exactly at endpoints; odd chapters traverse one SVG leg.
+      const chapter = Math.min(current * 7, 6.999999);
+      const index = Math.floor(chapter);
+      const stopped = index % 2 === 0;
+      const stop = Math.floor(index / 2);
+      const legIndex = Math.min(stop, 2);
+      const blend = stopped ? (stop === 3 ? 1 : 0) : chapter - index;
+      const eased = blend * blend * (3 - 2 * blend);
+      const point = legs[legIndex].getPointAtLength(lengths[legIndex] * eased);
+      travelingBurger.setAttribute('transform', `translate(${point.x} ${point.y})`);
+      storyStops.forEach((city, i) => city.classList.toggle('is-active', stopped && i === stop));
+      if (current !== target) storyFrame = window.requestAnimationFrame(updateStoryJourney);
+      else previousTime = 0;
+    };
+    const requestStoryUpdate = () => {
+      if (!storySection) return;
+      const stage = storySection.querySelector('.story-route');
+      const inset = parseFloat(getComputedStyle(stage).top) || 0;
+      const range = Math.max(storySection.offsetHeight - stage.offsetHeight, 1);
+      target = motionPreference.matches ? 0 : Math.max(0, Math.min(1, (inset - storySection.getBoundingClientRect().top) / range));
+      if (motionPreference.matches) current = 0;
+      if (!storyFrame) storyFrame = window.requestAnimationFrame(updateStoryJourney);
+    };
+    requestStoryUpdate();
+    window.addEventListener('scroll', requestStoryUpdate, { passive: true });
+    window.addEventListener('resize', requestStoryUpdate);
+    motionPreference.addEventListener('change', requestStoryUpdate);
+
     const mainScript = document.createElement('script');
     mainScript.src = '/main.js';
     document.body.appendChild(mainScript);
@@ -60,6 +100,10 @@ export default function SiteEffects() {
       window.clearTimeout(scrollbarTimer);
       document.documentElement.classList.remove('scrollbar-active');
       revealObserver?.disconnect();
+      window.cancelAnimationFrame(storyFrame);
+      window.removeEventListener('scroll', requestStoryUpdate);
+      window.removeEventListener('resize', requestStoryUpdate);
+      motionPreference.removeEventListener('change', requestStoryUpdate);
       document.documentElement.classList.remove('motion-ready');
       revealTargets.forEach(element => {
         element.classList.remove('is-revealed');

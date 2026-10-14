@@ -35,7 +35,7 @@ export default function LaunchView() {
         <span className="launch-kicker"><span className="launch-kicker-dot" /> LOVELY'S BAKER STREET</span>
         <h1 id="launch-title">THE NEXT<br /><em>BIG BITE.</em></h1>
         <p className="launch-lede">Big flavour. Made with love.</p>
-        <div className="launch-actions"><a className="launch-primary" href="#menu">Explore the menu <span aria-hidden="true">↗</span></a></div>
+        <div className="launch-actions"><a className="launch-primary" href="/food-gallery">Explore the menu <span aria-hidden="true">↗</span></a></div>
       </div>
       <div className="launch-visual">
         <img className="launch-logo-backdrop" src="/lovely-logo.png" alt="" aria-hidden="true" />
