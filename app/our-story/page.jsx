@@ -2,7 +2,7 @@ import SiteNav from '../site-nav';
 import SiteEffects from '../site-effects';
 import PageMotion from '../page-motion';
 export const metadata = { title: "Our Story | Lovely's Baker Street" };
-export default function StoryPage() { return <><SiteNav /><main className="brand-page"><div className="brand-heading story-heading"><video className="story-heading-video" autoPlay muted loop playsInline preload="metadata" aria-hidden="true"><source src="/our-story-background.mp4" type="video/mp4" /></video><div className="story-heading-content"><p>GOOD FOOD BRINGS US TOGETHER</p><h1>OUR <em>STORY.</em></h1><p>From the first burger to the last shared bite, Lovely's is a place to slow down, catch up and enjoy something delicious together.</p></div></div>
+export default function StoryPage() { return <><SiteNav /><main className="brand-page"><div className="brand-heading story-heading"><video className="story-heading-video" autoPlay muted loop playsInline preload="auto" aria-hidden="true"><source src="/our-story-background.mp4" type="video/mp4" /></video><div className="story-heading-content"><p>GOOD FOOD BRINGS US TOGETHER</p><h1>OUR <em>STORY.</em></h1><p>From the first burger to the last shared bite, Lovely's is a place to slow down, catch up and enjoy something delicious together.</p></div></div>
       <section className="story-section" id="story" aria-label="Lovely's journey from Nagpur to Hyderabad, Raipur and Bapatla">
         <div className="story-route" aria-label="Lovely's journey from Nagpur to Hyderabad, Raipur and Bapatla">
           <h2 className="journey-title">Our Story</h2>
