@@ -16,7 +16,9 @@ export default function SiteEffects() {
     let chapterVideoObserver;
     const chapterVideos = [...document.querySelectorAll('.chapter-video')];
     const playFromBurgerReveal = video => {
-      video.currentTime = Math.min(3, Math.max(0, video.duration - .1));
+      if (video.readyState >= 1 && Number.isFinite(video.duration)) {
+        video.currentTime = Math.min(3, Math.max(0, video.duration - .1));
+      }
       video.play().catch(() => {});
     };
     const replayChapterVideo = event => playFromBurgerReveal(event.currentTarget);
@@ -61,7 +63,10 @@ export default function SiteEffects() {
         entries.forEach(entry => {
           if (!entry.isIntersecting) return;
           if (entry.target.readyState >= 1) playFromBurgerReveal(entry.target);
-          else entry.target.addEventListener('loadedmetadata', () => playFromBurgerReveal(entry.target), { once: true });
+          else {
+            entry.target.addEventListener('loadedmetadata', () => playFromBurgerReveal(entry.target), { once: true });
+            entry.target.load();
+          }
           chapterVideoObserver.unobserve(entry.target);
         });
       }, { threshold: 0.25 });

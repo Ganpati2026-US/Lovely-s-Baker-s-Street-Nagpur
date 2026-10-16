@@ -1,7 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import LaunchBurger from './LaunchBurger';
+import dynamic from 'next/dynamic';
+
+// The detailed WebGL scene is only needed after the short opening sequence.
+// Keeping it in its own client chunk leaves the first page render responsive.
+const LaunchBurger = dynamic(() => import('./LaunchBurger'), { ssr: false });
 
 export default function LaunchView() {
   const section = useRef(null);
