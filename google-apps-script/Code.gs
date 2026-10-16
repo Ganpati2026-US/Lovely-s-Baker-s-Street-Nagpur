@@ -6,11 +6,12 @@
  */
 const BRAND = "LOVELY'S BAKER ST.";
 const OWNER_EMAIL = 'mandeep@lovelysbakerstreet.com';
+const DEFAULT_LOGO_URL = 'https://lbswebsite.appetiserindia.workers.dev/lovely-logo.png';
 const REQUIRED_PROPERTIES = ['SPREADSHEET_ID', 'WEBHOOK_SECRET'];
 
 function doGet(event) {
   const template = HtmlService.createTemplateFromFile('Index');
-  template.customerName = clean_(event.parameter.name, 100) || 'Future Lovely’s Partner';
+  template.customerName = clean_(event?.parameter?.name, 100) || 'Future Lovely’s Partner';
   return template.evaluate()
     .setTitle('Your Lovely’s Franchise Journey')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
@@ -59,8 +60,8 @@ function getSheet_() {
 }
 
 function sendCustomerConfirmation_(lead) {
-  const subject = '🍔 Your Franchise Journey Begins | Lovely’s Baker St.';
-  const text = `Hi ${lead.name},\n\nThank you for your interest in becoming a part of the Lovely’s Baker St. family! We’ve successfully received your franchise enquiry. Mr. Mandeep will be in touch with you shortly regarding your franchise enquiry.\n\nGOOD THINGS TAKE TIME. GREAT THINGS START HERE.\n\nTeam Lovely’s Baker St.`;
+  const subject = 'Your Franchise Journey Begins | Lovelys Baker St.';
+  const text = `Hi ${lead.name},\n\nThank you for your interest in becoming a part of the Lovelys Baker St. family. We have successfully received your franchise enquiry. Mr. Mandeep will be in touch with you shortly regarding your franchise enquiry.\n\nGOOD THINGS TAKE TIME. GREAT THINGS START HERE.\n\nTeam Lovelys Baker St.`;
   GmailApp.sendEmail(lead.email, subject, text, {
     name: BRAND,
     htmlBody: customerEmailHtml_(lead),
@@ -68,7 +69,7 @@ function sendCustomerConfirmation_(lead) {
 }
 
 function sendOwnerNotification_(lead) {
-  const subject = '🚨 NEW FRANCHISE ENQUIRY | Lovely’s Baker St.';
+  const subject = 'NEW FRANCHISE ENQUIRY | Lovelys Baker St.';
   const text = `New franchise enquiry\n\nName: ${lead.name}\nPhone: ${lead.phone}\nEmail: ${lead.email || 'Not provided'}\nCity: ${lead.city}\nPlans: ${lead.message || 'Not provided'}\nReference: ${lead.id}`;
   GmailApp.sendEmail(OWNER_EMAIL, subject, text, {
     name: BRAND,
@@ -79,39 +80,34 @@ function sendOwnerNotification_(lead) {
 function customerEmailHtml_(lead) {
   const openUrl = webAppUrl_() + '?name=' + encodeURIComponent(lead.name) + '&ref=' + encodeURIComponent(lead.id);
   return emailFrame_(`
-    <tr><td style="padding:30px 26px 18px;text-align:center;background:#ffffff;">
-      ${logoHtml_()}
-      <p style="margin:18px 0 5px;color:#d91624;font:700 11px Arial,sans-serif;letter-spacing:2px;">FRANCHISE ENQUIRY RECEIVED</p>
-      <h1 style="margin:0;color:#221918;font:800 28px Arial,sans-serif;letter-spacing:-1px;">SOMETHING EXCITING<br>IS COOKING! 🍔</h1>
-    </td></tr>
-    <tr><td style="padding:2px 26px 24px;text-align:center;background:#ffffff;">
-      ${redBoxHtml_()}
-      <p style="margin:22px 0 0;color:#342826;font:16px/1.65 Arial,sans-serif;">Hi ${escapeHtml_(lead.name)},<br><br>Thank you for your interest in becoming a part of the Lovely’s Baker St. family! We’ve successfully received your franchise enquiry.<br><br><strong>Mr. Mandeep will be in touch with you shortly regarding your franchise enquiry.</strong><br><br>We’re excited to explore this opportunity with you!<br><br>Thank you! ❤️<br>Team Lovely’s Baker St.</p>
-      <a href="${openUrl}" style="display:inline-block;margin:24px 0 17px;padding:15px 23px;background:#e51b27;color:#ffffff;border-radius:4px;font:800 12px Arial,sans-serif;letter-spacing:1px;text-decoration:none;">OPEN YOUR BOX 🍔</a>
-      <p style="margin:0;color:#d91624;font:800 10px Arial,sans-serif;letter-spacing:1.4px;">GOOD THINGS TAKE TIME. GREAT THINGS START HERE.</p>
-    </td></tr>`);
+    <tr><td align="center" style="padding:28px 28px 10px;background:#fffdf9;">${logoHtml_(96)}<p style="margin:17px 0 7px;color:#e51b27;font:700 10px Arial,sans-serif;letter-spacing:2px;">FRANCHISE ENQUIRY RECEIVED</p><h1 style="margin:0;color:#251b19;font:800 28px/1.06 Arial,sans-serif;letter-spacing:-.8px;">SOMETHING EXCITING<br>IS COOKING</h1></td></tr>
+    <tr><td align="center" style="padding:18px 28px 4px;background:#fffdf9;">${redBoxHtml_()}</td></tr>
+    <tr><td align="center" style="padding:22px 36px 12px;background:#fffdf9;"><p style="margin:0;color:#332724;font:16px/1.65 Arial,sans-serif;">Hi ${escapeHtml_(lead.name)},</p><p style="margin:20px 0 0;color:#332724;font:15px/1.7 Arial,sans-serif;">Thank you for your interest in becoming a part of the Lovelys Baker St. family. We have successfully received your franchise enquiry.</p><p style="margin:19px 0 0;color:#251b19;font:700 15px/1.65 Arial,sans-serif;">Mr. Mandeep will be in touch with you shortly regarding your franchise enquiry.</p><p style="margin:19px 0 0;color:#332724;font:15px/1.7 Arial,sans-serif;">We are excited to explore this opportunity with you.</p><p style="margin:20px 0 0;color:#332724;font:15px/1.55 Arial,sans-serif;">Thank you,<br>Team Lovelys Baker St.</p></td></tr>
+    <tr><td align="center" style="padding:10px 28px 27px;background:#fffdf9;"><a href="${openUrl}" style="display:inline-block;padding:15px 28px;background:#e51b27;border:1px solid #bb111d;border-radius:4px;color:#fff;font:700 12px Arial,sans-serif;letter-spacing:1px;text-decoration:none;">OPEN YOUR BOX</a><p style="margin:23px 0 0;color:#e51b27;font:700 9px Arial,sans-serif;letter-spacing:1.5px;">GOOD THINGS TAKE TIME. GREAT THINGS START HERE.</p></td></tr>`);
 }
 
 function ownerEmailHtml_(lead) {
-  const row = (label, value) => `<tr><td style="padding:11px 0;border-bottom:1px dashed #e8c5bf;color:#a9101c;font:700 10px Arial,sans-serif;letter-spacing:1px;">${label}</td><td style="padding:11px 0 11px 15px;border-bottom:1px dashed #e8c5bf;color:#291c19;font:14px Arial,sans-serif;">${escapeHtml_(value || '—')}</td></tr>`;
+  const row = (label, value) => `<tr><td width="31%" style="padding:13px 0;border-bottom:1px dashed #ecc8c1;color:#d51624;font:700 10px Arial,sans-serif;letter-spacing:1.2px;vertical-align:top;">${label}</td><td style="padding:13px 0 13px 14px;border-bottom:1px dashed #ecc8c1;color:#2c211f;font:14px/1.45 Arial,sans-serif;">${escapeHtml_(value || 'Not provided')}</td></tr>`;
   return emailFrame_(`
-    <tr><td style="padding:28px 26px 22px;background:#e51b27;text-align:center;">${logoHtml_()}<p style="margin:13px 0 0;color:#fff;font:800 12px Arial,sans-serif;letter-spacing:2px;">NEW FRANCHISE ENQUIRY</p></td></tr>
-    <tr><td style="padding:26px;background:#fffdf9;"><p style="margin:0 0 16px;color:#291c19;font:800 22px Arial,sans-serif;">Fresh from the enquiry counter 🍔</p><table role="presentation" width="100%" cellspacing="0" cellpadding="0">${row('NAME', lead.name)}${row('MOBILE', lead.phone)}${row('EMAIL', lead.email)}${row('CITY', lead.city)}${row('PLANS', lead.message)}${row('REFERENCE', lead.id)}</table></td></tr>`);
+    <tr><td align="center" style="padding:25px 26px 20px;background:#e51b27;">${logoHtml_(78)}<p style="margin:13px 0 0;color:#fff;font:700 10px Arial,sans-serif;letter-spacing:2px;">NEW FRANCHISE ENQUIRY</p></td></tr>
+    <tr><td style="padding:27px 28px 32px;background:#fffdf9;"><p style="margin:0 0 5px;color:#e51b27;font:700 10px Arial,sans-serif;letter-spacing:1.5px;">LOVELYS BAKER ST.</p><h1 style="margin:0 0 20px;color:#251b19;font:800 25px Arial,sans-serif;letter-spacing:-.5px;">Fresh from the enquiry counter</h1><table role="presentation" width="100%" cellspacing="0" cellpadding="0">${row('NAME', lead.name)}${row('MOBILE', lead.phone)}${row('EMAIL', lead.email)}${row('CITY', lead.city)}${row('PLANS', lead.message)}${row('REFERENCE', lead.id)}</table><p style="margin:22px 0 0;color:#806e69;font:11px Arial,sans-serif;">Submitted from the Lovelys Baker St. website.</p></td></tr>`);
 }
 
 function emailFrame_(content) {
-  return `<!doctype html><html><body style="margin:0;padding:0;background:#f5f2ed;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr><td align="center" style="padding:24px 10px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#fff;border:1px solid #f0d8d3;box-shadow:0 8px 24px rgba(72,25,20,.12);"><tr><td height="12" style="background:repeating-linear-gradient(90deg,#e51b27 0,#e51b27 18px,#fff8f0 18px,#fff8f0 36px);"></td></tr>${content}<tr><td height="12" style="background:repeating-linear-gradient(90deg,#e51b27 0,#e51b27 18px,#fff8f0 18px,#fff8f0 36px);"></td></tr></table></td></tr></table></body></html>`;
+  return `<!doctype html><html><body style="margin:0;padding:0;background:#f3efea;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3efea;"><tr><td align="center" style="padding:26px 10px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#fffdf9;border:1px solid #efd7d1;">${checkerStrip_()}${content}${checkerStrip_()}</table></td></tr></table></body></html>`;
 }
+
+function checkerStrip_() { let cells = ''; for (let i = 0; i < 20; i++) cells += `<td width="5%" height="12" style="background:${i % 2 ? '#fff8f0' : '#e51b27'};font-size:0;line-height:0;">&nbsp;</td>`; return `<tr>${cells}</tr>`; }
 
 function redBoxHtml_() {
-  return `<table role="presentation" width="230" align="center" cellspacing="0" cellpadding="0" style="margin:10px auto 0;"><tr><td style="padding:18px 12px;background:#f02a34;border:1px solid #b80f1b;border-radius:11px 11px 3px 3px;box-shadow:0 7px 0 #b80f1b,0 15px 18px rgba(70,17,15,.18);text-align:center;"><p style="margin:0;color:#fff;font:800 16px Arial,sans-serif;letter-spacing:1px;">LOVELY’S</p><p style="margin:4px 0 0;color:#fff8f0;font:700 9px Arial,sans-serif;letter-spacing:2px;">BAKER ST. · FRANCHISE BOX</p></td></tr></table>`;
+  return `<table role="presentation" width="248" align="center" cellspacing="0" cellpadding="0" style="margin:0 auto;"><tr><td align="center" style="padding:15px 14px 13px;background:#ed2934;border:1px solid #bd111c;border-radius:9px 9px 3px 3px;box-shadow:0 8px 0 #bd111c;"><img src="${brandLogoUrl_()}" width="46" alt="Lovelys Baker St." style="display:block;width:46px;height:46px;object-fit:contain;margin:0 auto 5px;border:0;"><p style="margin:0;color:#fff;font:700 13px Arial,sans-serif;letter-spacing:1.1px;">LOVELYS</p><p style="margin:4px 0 0;color:#fff8f0;font:700 8px Arial,sans-serif;letter-spacing:1.8px;">BAKER ST. FRANCHISE BOX</p></td></tr></table>`;
 }
 
-function logoHtml_() {
-  const url = property_('BRAND_LOGO_URL', false);
-  return url ? `<img src="${escapeHtml_(url)}" width="86" alt="Lovely's Baker St." style="display:block;width:86px;height:auto;margin:0 auto;border:0;">` : `<p style="margin:0;color:#e51b27;font:800 15px Arial,sans-serif;letter-spacing:1px;">LOVELY’S BAKER ST.</p>`;
+function logoHtml_(width) {
+  return `<img src="${brandLogoUrl_()}" width="${width}" alt="Lovelys Baker St." style="display:block;width:${width}px;height:auto;margin:0 auto;border:0;">`;
 }
 
+function brandLogoUrl_() { return property_('BRAND_LOGO_URL', false) || DEFAULT_LOGO_URL; }
 function webAppUrl_() { return property_('PUBLIC_WEB_APP_URL', false) || ScriptApp.getService().getUrl(); }
 function property_(key, required = true) { const value = PropertiesService.getScriptProperties().getProperty(key); if (required && !value) throw new Error(`Missing Script Property: ${key}`); return value || ''; }
 function assertConfigured_() { REQUIRED_PROPERTIES.forEach(key => property_(key)); }
