@@ -97,14 +97,14 @@ function emailFrame_(content) {
   return `<!doctype html><html><body style="margin:0;padding:0;background:#f3efea;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3efea;"><tr><td align="center" style="padding:26px 10px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:600px;background:#fffdf9;border:1px solid #efd7d1;">${checkerStrip_()}${content}${checkerStrip_()}</table></td></tr></table></body></html>`;
 }
 
-function checkerStrip_() { let cells = ''; for (let i = 0; i < 20; i++) cells += `<td width="5%" height="12" style="background:${i % 2 ? '#fff8f0' : '#e51b27'};font-size:0;line-height:0;">&nbsp;</td>`; return `<tr>${cells}</tr>`; }
+function checkerStrip_() { return '<tr><td height="12" style="background:repeating-linear-gradient(90deg,#e51b27 0,#e51b27 18px,#fff8f0 18px,#fff8f0 36px);font-size:0;line-height:0;">&nbsp;</td></tr>'; }
 
 function redBoxHtml_() {
-  return `<table role="presentation" width="248" align="center" cellspacing="0" cellpadding="0" style="margin:0 auto;"><tr><td align="center" style="padding:15px 14px 13px;background:#ed2934;border:1px solid #bd111c;border-radius:9px 9px 3px 3px;box-shadow:0 8px 0 #bd111c;"><img src="${brandLogoUrl_()}" width="46" alt="Lovelys Baker St." style="display:block;width:46px;height:46px;object-fit:contain;margin:0 auto 5px;border:0;"><p style="margin:0;color:#fff;font:700 13px Arial,sans-serif;letter-spacing:1.1px;">LOVELYS</p><p style="margin:4px 0 0;color:#fff8f0;font:700 8px Arial,sans-serif;letter-spacing:1.8px;">BAKER ST. FRANCHISE BOX</p></td></tr></table>`;
+  return `<table role="presentation" width="248" align="center" cellspacing="0" cellpadding="0" style="margin:0 auto;"><tr><td align="center" style="padding:15px 14px 13px;background:#ed2934;border:1px solid #bd111c;border-radius:9px 9px 3px 3px;box-shadow:0 8px 0 #bd111c;"><img src="${brandLogoUrl_()}" width="46" alt="Lovelys Baker St." style="display:block;width:46px;height:46px;object-fit:contain;margin:0 auto 5px;border:0;border-radius:50%;"><p style="margin:0;color:#fff;font:700 13px Arial,sans-serif;letter-spacing:1.1px;">LOVELYS</p><p style="margin:4px 0 0;color:#fff8f0;font:700 8px Arial,sans-serif;letter-spacing:1.8px;">BAKER ST. FRANCHISE BOX</p></td></tr></table>`;
 }
 
 function logoHtml_(width) {
-  return `<img src="${brandLogoUrl_()}" width="${width}" alt="Lovelys Baker St." style="display:block;width:${width}px;height:auto;margin:0 auto;border:0;">`;
+  return `<img src="${brandLogoUrl_()}" width="${width}" alt="Lovelys Baker St." style="display:block;width:${width}px;height:auto;margin:0 auto;border:0;border-radius:50%;">`;
 }
 
 function brandLogoUrl_() { return property_('BRAND_LOGO_URL', false) || DEFAULT_LOGO_URL; }
