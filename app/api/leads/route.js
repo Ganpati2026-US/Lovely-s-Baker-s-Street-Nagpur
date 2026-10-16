@@ -10,7 +10,7 @@ function cleanText(value, max) {
 async function notifyAppsScript(lead) {
   const url = process.env.GOOGLE_APPS_SCRIPT_WEB_APP_URL;
   const secret = process.env.GOOGLE_APPS_SCRIPT_SECRET;
-  if (!url || !secret) return;
+  if (!url || !secret) return false;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   try {
@@ -21,9 +21,13 @@ async function notifyAppsScript(lead) {
       signal: controller.signal,
     });
     if (!response.ok) throw new Error(`Apps Script returned ${response.status}`);
+    const result = await response.json().catch(() => null);
+    if (!result?.ok) throw new Error('Apps Script did not accept the enquiry.');
+    return true;
   } catch (error) {
     // The website submission remains successful because its primary lead record was saved.
     console.error('Could not notify franchise Apps Script:', error);
+    return false;
   } finally {
     clearTimeout(timeout);
   }
@@ -42,8 +46,17 @@ export async function POST(request) {
       return Response.json({ error: 'Please check your name, mobile number, city and consent.' }, { status: 400 });
     }
     const lead = { id: crypto.randomUUID(), createdAt: new Date().toISOString(), name, phone, email, city, message, source: 'website' };
-    await saveLead(lead);
-    await notifyAppsScript(lead);
+    const delivery = notifyAppsScript(lead);
+    let savedLocally = false;
+    try {
+      await saveLead(lead);
+      savedLocally = true;
+    } catch (error) {
+      // Cloudflare Workers have no persistent local filesystem. Apps Script is the durable production record.
+      console.error('Could not save franchise enquiry locally:', error);
+    }
+    const notified = await delivery;
+    if (!savedLocally && !notified) throw new Error('No lead delivery destination is available.');
     return Response.json({ ok: true }, { status: 201 });
   } catch (error) {
     console.error('Could not save franchise enquiry:', error);
