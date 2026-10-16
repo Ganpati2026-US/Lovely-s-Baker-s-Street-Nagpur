@@ -5,7 +5,8 @@
  * Set the required Script Properties described in README.md before deployment.
  */
 const BRAND = "LOVELY'S BAKER ST.";
-const REQUIRED_PROPERTIES = ['SPREADSHEET_ID', 'OWNER_EMAIL', 'WEBHOOK_SECRET'];
+const OWNER_EMAIL = 'mandeep@lovelysbakerstreet.com';
+const REQUIRED_PROPERTIES = ['SPREADSHEET_ID', 'WEBHOOK_SECRET'];
 
 function doGet(event) {
   const template = HtmlService.createTemplateFromFile('Index');
@@ -69,7 +70,7 @@ function sendCustomerConfirmation_(lead) {
 function sendOwnerNotification_(lead) {
   const subject = '🚨 NEW FRANCHISE ENQUIRY | Lovely’s Baker St.';
   const text = `New franchise enquiry\n\nName: ${lead.name}\nPhone: ${lead.phone}\nEmail: ${lead.email || 'Not provided'}\nCity: ${lead.city}\nPlans: ${lead.message || 'Not provided'}\nReference: ${lead.id}`;
-  GmailApp.sendEmail(property_('OWNER_EMAIL'), subject, text, {
+  GmailApp.sendEmail(OWNER_EMAIL, subject, text, {
     name: BRAND,
     htmlBody: ownerEmailHtml_(lead),
   });
