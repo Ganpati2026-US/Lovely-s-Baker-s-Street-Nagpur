@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff8f1">
+  <title>Lovely's Baker Street — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20261008a">
+</head>
+<body class="admin-page">
+  <header class="site-header"><a class="brand" href="/" aria-label="Lovely's Baker Street home"><img class="brand-logo" src="lovely-logo.png" alt="Lovely's Baker Street logo"></a><a class="text-link" href="/">← Back to website</a></header>
+  <main class="admin-main">
+    <section class="admin-login" id="admin-login">
+      <p class="eyebrow">LOVELY'S BAKER STREET</p><h1>Site admin</h1><p>Sign in to review franchise enquiries and update website photos.</p>
+      <form id="login-form"><label for="admin-password">Admin password</label><input id="admin-password" name="password" type="password" autocomplete="current-password" required><button class="button button-red" type="submit">Sign in <span>↗</span></button><p class="admin-message" id="login-message" role="status"></p></form>
+    </section>
+    <div class="admin-dashboard" id="admin-dashboard" hidden>
+      <div class="admin-title"><div><p class="eyebrow">MANAGE YOUR WEBSITE</p><h1>Lovely's admin</h1></div><button class="admin-logout" id="logout-button" type="button">Sign out</button></div>
+      <section class="admin-panel"><div class="admin-panel-heading"><div><p class="eyebrow">SITE IMAGES</p><h2>Update your photos</h2><p>Upload a JPG, PNG or WebP up to 8 MB. The selected image updates that section of the website.</p></div></div><div class="photo-manager" id="photo-manager"></div></section>
+      <section class="admin-panel"><div class="admin-panel-heading"><div><p class="eyebrow">PARTNER INTEREST</p><h2>Enquiries</h2><p>Submitted enquiries are saved here, even when an email or WhatsApp notification is not configured.</p></div><button class="admin-refresh" id="refresh-leads" type="button">Refresh</button></div><div class="lead-table-wrap"><table class="lead-table"><thead><tr><th>Received</th><th>Name</th><th>Phone</th><th>Email</th><th>City</th><th>Plans</th></tr></thead><tbody id="lead-rows"></tbody></table></div><p class="admin-message" id="leads-message" role="status"></p></section>
+    </div>
+  </main>
+  <script src="admin.js?v=20261008a" defer></script>
+</body>
+</html>

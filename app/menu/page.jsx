@@ -1,0 +1,9 @@
+import SiteNav from '../site-nav';
+import { menu } from './menu-data';
+import PageMotion from '../page-motion';
+export const metadata = { title: "Menu | Lovely's Baker Street" };
+export default function MenuPage() { return <><SiteNav /><main className="brand-page digital-menu"><header className="brand-heading"><p>HAND CRAFTED FOR YOUR CRAVINGS</p><h1>BIG BITES.<br /><em>LOVELY MENU.</em></h1><p>Find your favourite. All prices in ₹.</p><div className="reference-links"><a href="/menu-original-burgers.jpg">View original burger & sides menu ↗</a><a href="/menu-original-kitchen.jpg">View original kitchen menu ↗</a></div></header>
+<div className="menu-layout"><nav className="category-nav" aria-label="Menu categories">{menu.map(group => <a key={group.id} href={'#'+group.id}>{group.name}</a>)}</nav><div className="menu-listings">{menu.map((group, index) => <section className="menu-category" id={group.id} key={group.id}><p className="category-number">{String(index+1).padStart(2,'0')} / MADE FOR YOUR CRAVINGS</p><h2>{group.name}</h2><div className="menu-table-wrap"><table><thead><tr><th scope="col">On the menu</th>{group.columns.map(col => <th scope="col" key={col}>{col}</th>)}</tr></thead><tbody>{group.rows.map(([name,...prices])=><tr key={name}><th scope="row">{name}</th>{prices.map((price,i)=><td key={i}>{price === '—' ? '—' : '₹'+price}</td>)}</tr>)}</tbody></table></div>
+{index === 1 && <p className="menu-detail">Choose your bun: Regular: 0/- · Multigrain Bun: 30/-<br />Any Burger can’t Be done in 1/2 part due to freshness of the Burger Bun ask for the knife instead.</p>}
+{index === 8 && <p className="menu-detail">Chicken toppings: Sausage ₹59 · chicken Pepproni ₹69 · Smoked Chicken Salami ₹69 · Spicy Shredded Chicken ₹69</p>}
+</section>)}</div></div></main><PageMotion /></>; }

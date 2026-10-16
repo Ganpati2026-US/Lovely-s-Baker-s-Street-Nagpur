@@ -1,0 +1,2 @@
+export const metadata = { title: "Terms | Lovely's Baker Street" };
+export default function Terms(){return <main className="brand-heading"><h1>Website terms</h1><p>This website presents Lovely's Baker Street's food and restaurant information. For current availability, confirm with the restaurant.</p><p>Google reviews and associated content are provided by Google Maps and are subject to <a href="https://maps.google.com/help/terms_maps/">Google Maps terms</a>. Reviews express their authors' opinions.</p><a href="/">Back to Home</a></main>;}

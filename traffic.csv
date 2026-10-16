@@ -1,0 +1,17 @@
+Location,Hour,Vehicle_Type,Vehicle_Count
+Sitabuldi,8,Car,120
+Sitabuldi,9,Bike,200
+Sitabuldi,10,Bus,50
+Dharampeth,8,Car,100
+Dharampeth,9,Bike,150
+Dharampeth,10,Bus,40
+Sadar,8,Car,90
+Sadar,9,Bike,130
+Sadar,10,Bus,30
+Manish_Nagar,8,Car,110
+Manish_Nagar,9,Bike,170
+Manish_Nagar,10,Bus,45
+Sitabuldi,11,Car,140
+Dharampeth,11,Bike,160
+Sadar,11,Car,100
+Manish_Nagar,11,Bike,190

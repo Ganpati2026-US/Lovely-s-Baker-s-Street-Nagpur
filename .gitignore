@@ -1,0 +1,17 @@
+.server-data/
+__pycache__/
+*.py[cod]
+node_modules/
+.next/
+.vercel/
+public/uploads/*
+.env*
+!.env.example
+
+# OpenNext
+.open-next
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
