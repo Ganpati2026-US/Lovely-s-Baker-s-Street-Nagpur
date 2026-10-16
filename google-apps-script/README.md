@@ -7,8 +7,8 @@ This project records every website franchise enquiry in Google Sheets, sends the
 1. Create a Google Sheet and copy its ID from its URL.
 2. Open [script.new](https://script.new), create a new standalone project, and add the contents of `Code.gs` and `Index.html` as files with the same names.
 3. In **Project settings → Script properties**, add:
-   - `SPREADSHEET_ID` — your Sheet ID
    - `WEBHOOK_SECRET` — a long random value; use the exact same value in Cloudflare as `GOOGLE_APPS_SCRIPT_SECRET`
+   - `SPREADSHEET_ID` — the private ID of the Sheet where franchise enquiries should be recorded
    - `BRAND_LOGO_URL` — optional public URL for the original Lovely’s logo, for example `https://YOUR-WORKER.workers.dev/lovely-logo.png`
 4. Deploy → **New deployment** → **Web app**. Set **Execute as: Me** and **Who has access: Anyone**. Copy the `/exec` URL.
 5. Add these Cloudflare Worker secrets/variables:
